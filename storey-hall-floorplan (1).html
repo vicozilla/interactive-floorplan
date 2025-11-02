@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Storey Hall - Interactive Floorplan</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        h1 {
+            color: white;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        .instructions {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196F3;
+        }
+
+        .instructions p {
+            color: #1565C0;
+            margin: 5px 0;
+        }
+
+        .floor-info {
+            background: #e8f5e9;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .floor-info h3 {
+            color: #2e7d32;
+            margin-bottom: 5px;
+            font-size: 1.1em;
+        }
+
+        .floor-info p {
+            color: #1b5e20;
+            margin: 0;
+            font-size: 0.9em;
+        }
+
+        .floor-navigation {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .floor-btn {
+            flex: 1;
+            min-width: 200px;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .floor-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .floor-btn:active {
+            transform: translateY(0);
+        }
+
+        .floor-btn.current {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            cursor: default;
+        }
+
+        .floor-btn.current:hover {
+            transform: none;
+        }
+
+        .floorplan-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        #floorplanCanvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            cursor: pointer;
+        }
+
+        .info-panel {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            min-height: 100px;
+        }
+
+        .info-panel h2 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        .info-panel p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 8px;
+            white-space: pre-line;
+        }
+
+        .info-panel.empty {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-style: italic;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-content h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .modal-content p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 10px;
+            white-space: pre-line;
+        }
+
+        .close-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 15px;
+            transition: background 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: #5568d3;
+        }
+
+        .legend {
+            margin-top: 15px;
+            padding: 15px;
+            background: #fff3cd;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .legend h3 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+            color: #856404;
+        }
+
+        .legend-color {
+            width: 30px;
+            height: 20px;
+            border-radius: 3px;
+            margin-right: 10px;
+            border: 2px solid #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎭 Storey Hall - Interactive Floorplan</h1>
+    
+    <div class="container">
+        <div class="instructions">
+            <p><strong>How to use:</strong></p>
+            <p>• Hover over different areas to highlight them</p>
+            <p>• Click on an area to see detailed information in a popup</p>
+        </div>
+
+        <div class="floor-info">
+            <h3>📍 Current Floor: Storey Hall (Level 5) - Foyer & Auditorium</h3>
+            <p>Networking space and main auditorium</p>
+        </div>
+
+        <div class="floor-navigation">
+            <button class="floor-btn" onclick="showFloor('ground')">
+                🏠 Ground Floor (Level 2)<br>
+                <small style="font-weight: normal; font-size: 0.85em;">Main Entrance</small>
+            </button>
+            <button class="floor-btn current">
+                🎭 Storey Hall (Level 5)<br>
+                <small style="font-weight: normal; font-size: 0.85em;">You are here</small>
+            </button>
+            <button class="floor-btn" onclick="showFloor('green-brain')">
+                🧠 Green Brain (Level 7)<br>
+                <small style="font-weight: normal; font-size: 0.85em;">Conference & Seminar Rooms</small>
+            </button>
+        </div>
+
+        <div class="floorplan-wrapper">
+            <div class="canvas-container">
+                <canvas id="floorplanCanvas"></canvas>
+            </div>
+        </div>
+
+        <div class="legend">
+            <h3>📍 Clickable Areas:</h3>
+            <div class="legend-item">
+                <div class="legend-color" style="background: rgba(156, 39, 176, 0.5);"></div>
+                <span>Storey Hall Foyer</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: rgba(255, 152, 0, 0.5);"></div>
+                <span>Storey Hall Auditorium</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: rgba(102, 126, 234, 0.5);"></div>
+                <span>Elevator</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: rgba(255, 99, 71, 0.5);"></div>
+                <span>Stairs</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: rgba(0, 188, 212, 0.5);"></div>
+                <span>🚻 All Gender Bathroom</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <h2 id="modal-title">Area Name</h2>
+            <p id="modal-description"></p>
+            <button class="close-btn" onclick="closeModal()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('floorplanCanvas');
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+        
+        // Area definitions with your exact coordinates
+        const areas = {
+            storeyhallfoyer: {
+                name: 'Storey Hall Foyer',
+                coords: [[264,119], [345,119], [345,266], [264,266]],
+                color: 'rgba(156, 39, 176, 0.4)',
+                borderColor: '#9C27B0',
+                description: 'This area will function as the booth and networking space.'
+            },
+            storeyhallauditorium: {
+                name: 'Storey Hall Auditorium',
+                coords: [[59,43], [215,43], [215,348], [59,348]],
+                color: 'rgba(255, 152, 0, 0.4)',
+                borderColor: '#FF9800',
+                description: 'This space will host the opening Plenary, feature workshop, and closing feature debate.\n\nSeating capacity: 450'
+            },
+            elevator: {
+                name: 'Elevator',
+                coords: [[348,266], [376,266], [376,297], [348,297]],
+                color: 'rgba(102, 126, 234, 0.4)',
+                borderColor: '#667eea',
+                description: `Take the elevator to access: 
+- Building exit (Level 2)
+- Green Brain Conference rooms (Level 7) 
+- Green Brain Seminar rooms (Level 7)`
+            },
+            stairs: {
+                name: 'Stairs',
+                coords: [[288,290], [345,290], [345,340], [288,340]],
+                color: 'rgba(255, 99, 71, 0.4)',
+                borderColor: '#ff6347',
+                description: `Take these stairs to access: 
+- Building exit (Level 2)
+- Green Brain Conference rooms (Level 7) 
+- Green Brain Seminar rooms (Level 7)`
+            },
+            allgenderbathroom: {
+                name: '🚻',
+                coords: [[273,15], [306,15], [306,37], [273,37]],
+                color: 'rgba(0, 188, 212, 0.4)',
+                borderColor: '#00BCD4',
+                description: 'All Gender Bathroom - Accessible facilities available'
+            }
+        };
+
+        let currentHover = null;
+        let imageLoaded = false;
+        
+        // Bounce animation variables
+        let bounceOffset = 0;
+        let bounceDirection = 1;
+        const bounceSpeed = 0.3;
+        const bounceHeight = 5;
+        let isAnimating = false;
+        let lastBounceTime = 0;
+        const bounceInterval = 10000; // 10 seconds in milliseconds
+
+        img.onload = function() {
+            canvas.width = img.width;
+            canvas.height = img.height;
+            imageLoaded = true;
+            drawCanvas();
+            animate(); // Start the bounce animation
+        };
+
+        img.src = 'data:image/png;base64,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';
+
+        function drawCanvas() {
+            if (!imageLoaded) return;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0);
+
+            // Draw hover highlight if active
+            if (currentHover) {
+                const area = areas[currentHover];
+                ctx.fillStyle = area.color;
+                ctx.strokeStyle = area.borderColor;
+                ctx.lineWidth = 3;
+
+                ctx.beginPath();
+                ctx.moveTo(area.coords[0][0], area.coords[0][1]);
+                for (let i = 1; i < area.coords.length; i++) {
+                    ctx.lineTo(area.coords[i][0], area.coords[i][1]);
+                }
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+            }
+
+            // Draw labels for all areas
+            for (const [id, area] of Object.entries(areas)) {
+                const xs = area.coords.map(c => c[0]);
+                const ys = area.coords.map(c => c[1]);
+                const centerX = xs.reduce((a, b) => a + b, 0) / xs.length;
+                const centerY = ys.reduce((a, b) => a + b, 0) / ys.length;
+
+                // Calculate area size to scale font
+                const width = Math.max(...xs) - Math.min(...xs);
+                const height = Math.max(...ys) - Math.min(...ys);
+                const areaSize = width * height;
+                
+                // For small areas, offset the label and draw a pointer
+                let labelX = centerX;
+                let labelY = centerY;
+                let drawPointer = false;
+                
+                // Apply bounce animation to foyer, auditorium, and bathroom labels
+                let labelBounce = 0;
+                if (id === 'storeyhallfoyer' || id === 'storeyhallauditorium' || id === 'allgenderbathroom') {
+                    labelBounce = bounceOffset;
+                }
+                
+                if (id === 'stairs') {
+                    // Position at bottom of the stairs area
+                    const maxY = Math.max(...ys);
+                    labelX = centerX;
+                    labelY = maxY - 15;
+                    drawPointer = false;
+                } else if (id === 'elevator') {
+                    // Position at top of the elevator area
+                    const minY = Math.min(...ys);
+                    labelX = centerX;
+                    labelY = minY + 15;
+                    drawPointer = false;
+                } else if (id === 'allgenderbathroom') {
+                    // Apply bounce to the bathroom icon
+                    labelY = centerY - labelBounce;
+                } else if (id === 'storeyhallfoyer' || id === 'storeyhallauditorium') {
+                    // Apply bounce to centered position
+                    labelY = centerY - labelBounce;
+                }
+                
+                // Scale font size based on area
+                let fontSize = 14;
+                if (areaSize < 1000) {
+                    fontSize = 10;
+                } else if (areaSize < 3000) {
+                    fontSize = 11;
+                }
+
+                ctx.font = `bold ${fontSize}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                // Handle multi-line labels
+                let lines = [area.name];
+                if (id === 'storeyhallfoyer') {
+                    lines = ['Storey Hall', 'Foyer'];
+                } else if (id === 'storeyhallauditorium') {
+                    lines = ['Storey Hall', 'Auditorium'];
+                }
+                
+                const textWidth = Math.max(...lines.map(line => ctx.measureText(line).width));
+                const padding = fontSize < 12 ? 4 : 6;
+                const lineHeight = fontSize + 4;
+                const totalHeight = lines.length * lineHeight;
+                
+                // Draw pointer line if needed
+                if (drawPointer) {
+                    ctx.strokeStyle = area.borderColor;
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([3, 3]);
+                    ctx.beginPath();
+                    ctx.moveTo(centerX, centerY);
+                    ctx.lineTo(labelX - textWidth/2 - padding - 5, labelY);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                    
+                    // Draw small circle at connection point
+                    ctx.fillStyle = area.borderColor;
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY, 3, 0, 2 * Math.PI);
+                    ctx.fill();
+                }
+                
+                // Draw label background
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+                ctx.fillRect(
+                    labelX - textWidth/2 - padding,
+                    labelY - totalHeight/2,
+                    textWidth + padding * 2,
+                    totalHeight
+                );
+                
+                ctx.strokeStyle = area.borderColor;
+                ctx.lineWidth = 2;
+                ctx.strokeRect(
+                    labelX - textWidth/2 - padding,
+                    labelY - totalHeight/2,
+                    textWidth + padding * 2,
+                    totalHeight
+                );
+
+                ctx.fillStyle = '#333';
+                lines.forEach((line, i) => {
+                    const lineY = labelY - totalHeight/2 + lineHeight/2 + (i * lineHeight);
+                    ctx.fillText(line, labelX, lineY);
+                });
+            }
+        }
+
+        function drawCurvedArrow(points, color, width) {
+            if (points.length < 2) return;
+
+            ctx.strokeStyle = color;
+            ctx.lineWidth = width;
+            ctx.setLineDash([8, 5]); // Dashed line
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            // Draw smooth curve through points
+            ctx.beginPath();
+            ctx.moveTo(points[0][0], points[0][1]);
+
+            // Use quadratic curves for smoother path
+            for (let i = 1; i < points.length - 1; i++) {
+                const xc = (points[i][0] + points[i + 1][0]) / 2;
+                const yc = (points[i][1] + points[i + 1][1]) / 2;
+                ctx.quadraticCurveTo(points[i][0], points[i][1], xc, yc);
+            }
+
+            // Final segment to last point
+            ctx.lineTo(points[points.length - 1][0], points[points.length - 1][1]);
+            ctx.stroke();
+            ctx.setLineDash([]); // Reset to solid line
+
+            // Draw arrow head at the end
+            const headlen = 15;
+            const lastIdx = points.length - 1;
+            const secondLastIdx = points.length - 2;
+            const dx = points[lastIdx][0] - points[secondLastIdx][0];
+            const dy = points[lastIdx][1] - points[secondLastIdx][1];
+            const angle = Math.atan2(dy, dx);
+
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(points[lastIdx][0], points[lastIdx][1]);
+            ctx.lineTo(
+                points[lastIdx][0] - headlen * Math.cos(angle - Math.PI / 6),
+                points[lastIdx][1] - headlen * Math.sin(angle - Math.PI / 6)
+            );
+            ctx.lineTo(
+                points[lastIdx][0] - headlen * Math.cos(angle + Math.PI / 6),
+                points[lastIdx][1] - headlen * Math.sin(angle + Math.PI / 6)
+            );
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        function isPointInPolygon(point, polygon) {
+            let inside = false;
+            for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+                const xi = polygon[i][0], yi = polygon[i][1];
+                const xj = polygon[j][0], yj = polygon[j][1];
+                
+                const intersect = ((yi > point[1]) !== (yj > point[1]))
+                    && (point[0] < (xj - xi) * (point[1] - yi) / (yj - yi) + xi);
+                if (intersect) inside = !inside;
+            }
+            return inside;
+        }
+
+        function getAreaAtPoint(x, y) {
+            for (const [id, area] of Object.entries(areas)) {
+                if (isPointInPolygon([x, y], area.coords)) {
+                    return id;
+                }
+            }
+            return null;
+        }
+
+        canvas.addEventListener('mousemove', function(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+            const areaId = getAreaAtPoint(x, y);
+            
+            if (areaId !== currentHover) {
+                currentHover = areaId;
+                drawCanvas();
+                
+                if (areaId) {
+                    canvas.style.cursor = 'pointer';
+                } else {
+                    canvas.style.cursor = 'default';
+                }
+            }
+        });
+
+        canvas.addEventListener('click', function(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+            const areaId = getAreaAtPoint(x, y);
+            if (areaId) {
+                const area = areas[areaId];
+                document.getElementById('modal-title').textContent = area.name;
+                document.getElementById('modal-description').textContent = area.description;
+                document.getElementById('modal').classList.add('show');
+            }
+        });
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('show');
+        }
+
+        document.getElementById('modal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        window.addEventListener('resize', drawCanvas);
+        
+        // Animation loop for bouncing labels
+        function animate() {
+            const currentTime = Date.now();
+            
+            // Check if 10 seconds have passed since last bounce
+            if (!isAnimating && currentTime - lastBounceTime >= bounceInterval) {
+                isAnimating = true;
+                bounceOffset = 0;
+                bounceDirection = 1;
+                lastBounceTime = currentTime;
+            }
+            
+            // Update bounce offset if currently animating
+            if (isAnimating) {
+                bounceOffset += bounceSpeed * bounceDirection;
+                
+                // Reverse direction at bounce limits
+                if (bounceOffset >= bounceHeight) {
+                    bounceDirection = -1;
+                } else if (bounceOffset <= 0 && bounceDirection === -1) {
+                    // Bounce complete - stop animating
+                    bounceOffset = 0;
+                    isAnimating = false;
+                }
+            }
+            
+            // Redraw canvas with new position
+            drawCanvas();
+            
+            // Continue animation loop
+            requestAnimationFrame(animate);
+        }
+
+        function showFloor(floorId) {
+            if (floorId === 'ground') {
+                window.location.href = 'floorplan-custom.html';
+            } else {
+                alert('Green Brain floor plan coming soon!');
+            }
+        }
+    </script>
+</body>
+</html>
