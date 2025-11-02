@@ -429,13 +429,13 @@
                     labelX = centerX;
                     labelY = centerY - labelBounce;
                     drawPointer = false;
-                    fontSize = 12;
+                    fontSize = 10;
                 } else if (id === 'elevator') {
                     // Center the label in the elevator area
                     labelX = centerX;
                     labelY = centerY - labelBounce;
                     drawPointer = false;
-                    fontSize = 12;
+                    fontSize = 10;
                 }
 
                 ctx.font = `bold ${fontSize}px Arial`;
@@ -450,7 +450,7 @@
                 
                 const textWidth = Math.max(...lines.map(line => ctx.measureText(line).width));
                 const padding = 6;
-                const lineHeight = fontSize + 4;
+                const lineHeight = fontSize + 2;
                 const totalHeight = lines.length * lineHeight;
                 
                 // Draw pointer line if needed
