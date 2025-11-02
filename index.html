@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrance Level (Level 2) - Interactive Floorplan</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        h1 {
+            color: white;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        .instructions {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196F3;
+        }
+
+        .instructions p {
+            color: #1565C0;
+            margin: 5px 0;
+        }
+
+        .floorplan-wrapper {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .floor-navigation {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .floor-btn {
+            flex: 1;
+            min-width: 200px;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .floor-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .floor-btn:active {
+            transform: translateY(0);
+        }
+
+        .floor-btn.current {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            cursor: default;
+        }
+
+        .floor-btn.current:hover {
+            transform: none;
+        }
+
+        .floor-info {
+            background: #e8f5e9;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .floor-info h3 {
+            color: #2e7d32;
+            margin-bottom: 5px;
+            font-size: 1.1em;
+        }
+
+        .floor-info p {
+            color: #1b5e20;
+            margin: 0;
+            font-size: 0.9em;
+        }
+
+        .canvas-container {
+            position: relative;
+            width: 100%;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        #floorplanCanvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            cursor: pointer;
+        }
+
+        .info-panel {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            min-height: 100px;
+        }
+
+        .info-panel h2 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        .info-panel p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 8px;
+            white-space: pre-line;
+        }
+
+        .info-panel.empty {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-style: italic;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-content h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .modal-content p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 10px;
+            white-space: pre-line;
+        }
+
+        .close-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 15px;
+            transition: background 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: #5568d3;
+        }
+
+        .legend {
+            margin-top: 15px;
+            padding: 15px;
+            background: #fff3cd;
+            border-radius: 8px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .legend h3 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+            color: #856404;
+        }
+
+        .legend-color {
+            width: 30px;
+            height: 20px;
+            border-radius: 3px;
+            margin-right: 10px;
+            border: 2px solid #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>🏠 Interactive Floorplan</h1>
+    
+    <div class="container">
+        <div class="instructions">
+            <p><strong>How to use:</strong></p>
+            <p>• Hover over different areas to highlight them</p>
+            <p>• Click on an area to see detailed information in a popup</p>
+        </div>
+
+        <div class="floor-info">
+            <h3>📍 Current Floor: Entrance Level (Level 2)</h3>
+            <p>Use the stairs or elevator to access other floors</p>
+        </div>
+
+        <div class="floor-navigation">
+            <button class="floor-btn current" onclick="showFloor('ground')">
+                🏠 Entrance Level (Level 2)<br>
+                <small style="font-weight: normal; font-size: 0.85em;">You are here</small>
+            </button>
+            <button class="floor-btn" onclick="showFloor('storey-hall')">
+                🎭 Storey Hall (Level 5)<br>
+                <small style="font-weight: normal; font-size: 0.85em;">Foyer & Auditorium</small>
+            </button>
+            <button class="floor-btn" onclick="showFloor('green-brain')">
+                🧠 Green Brain (Level 7)<br>
+                <small style="font-weight: normal; font-size: 0.85em;">Conference & Seminar Rooms</small>
+            </button>
+        </div>
+
+        <div class="floorplan-wrapper">
+            <div class="canvas-container">
+                <canvas id="floorplanCanvas"></canvas>
+            </div>
+        </div>
+
+        <div class="legend">
+            <h3>📍 Clickable Areas:</h3>
+            <div class="legend-item">
+                <div class="legend-color" style="background: rgba(255, 99, 71, 0.5);"></div>
+                <span>Stairs</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: rgba(102, 126, 234, 0.5);"></div>
+                <span>Elevator</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: rgba(76, 175, 80, 0.5);"></div>
+                <span>Swanston Street Entrance</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <h2 id="modal-title">Area Name</h2>
+            <p id="modal-description"></p>
+            <button class="close-btn" onclick="closeModal()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('floorplanCanvas');
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+        
+        // Area definitions with your exact coordinates
+        const areas = {
+            stairs: {
+                name: 'Stairs',
+                coords: [[96,21], [264,21], [264,92], [96,92]],
+                color: 'rgba(255, 99, 71, 0.4)',
+                borderColor: '#ff6347',
+                size: 'Not specified',
+                description: `Take these stairs to access: 
+- Storey Hall Foyer (Level 5)
+- Storey Hall Auditorium (Level 5)
+- Green Brain Conference rooms (Level 7)
+- Green Brain Seminar rooms (Level 7)`
+            },
+            elevator: {
+                name: 'Elevator',
+                coords: [[355,4], [451,4], [451,93], [355,93]],
+                color: 'rgba(102, 126, 234, 0.4)',
+                borderColor: '#667eea',
+                size: 'Not specified',
+                description: `Take the elevator to access: 
+- Storey Hall Foyer (Level 5)
+- Storey Hall Auditorium (Level 5)
+- Green Brain Conference rooms (Level 7)
+- Green Brain Seminar rooms (Level 7)`
+            },
+            swanstonstreetentrance: {
+                name: 'Swanston Street Entrance',
+                coords: [[310,195], [435,195], [435,300], [310,300]],
+                color: 'rgba(76, 175, 80, 0.4)',
+                borderColor: '#4CAF50',
+                size: 'Not specified',
+                description: 'No description'
+            }
+        };
+
+        let currentHover = null;
+        let imageLoaded = false;
+        
+        // Bounce animation variables
+        let bounceOffset = 0;
+        let bounceDirection = 1;
+        const bounceSpeed = 0.3;
+        const bounceHeight = 5;
+        let isAnimating = false;
+        let lastBounceTime = 0;
+        const bounceInterval = 10000; // 10 seconds in milliseconds
+        let animationFrame = 0;
+
+        img.onload = function() {
+            canvas.width = img.width;
+            canvas.height = img.height;
+            imageLoaded = true;
+            animate();
+        };
+
+        img.src = 'data:image/png;base64,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';
+
+        function drawCanvas() {
+            if (!imageLoaded) return;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0);
+
+            // Draw hover highlight if active
+            if (currentHover) {
+                const area = areas[currentHover];
+                ctx.fillStyle = area.color;
+                ctx.strokeStyle = area.borderColor;
+                ctx.lineWidth = 3;
+
+                ctx.beginPath();
+                ctx.moveTo(area.coords[0][0], area.coords[0][1]);
+                for (let i = 1; i < area.coords.length; i++) {
+                    ctx.lineTo(area.coords[i][0], area.coords[i][1]);
+                }
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+            }
+
+            // Draw labels for all areas
+            for (const [id, area] of Object.entries(areas)) {
+                // Calculate center point of polygon
+                const xs = area.coords.map(c => c[0]);
+                const ys = area.coords.map(c => c[1]);
+                const centerX = xs.reduce((a, b) => a + b, 0) / xs.length;
+                const centerY = ys.reduce((a, b) => a + b, 0) / ys.length;
+
+                // For small areas, offset the label and draw a pointer
+                let labelX = centerX;
+                let labelY = centerY;
+                let drawPointer = false;
+                let fontSize = 14;
+                
+                // Apply bounce animation to stairs and elevator labels
+                let labelBounce = 0;
+                if (id === 'stairs' || id === 'elevator') {
+                    labelBounce = bounceOffset;
+                }
+                
+                if (id === 'stairs') {
+                    // Keep at center
+                    labelX = centerX;
+                    labelY = centerY - labelBounce;
+                    drawPointer = false;
+                    fontSize = 12;
+                } else if (id === 'elevator') {
+                    // Center the label in the elevator area
+                    labelX = centerX;
+                    labelY = centerY - labelBounce;
+                    drawPointer = false;
+                    fontSize = 12;
+                }
+
+                ctx.font = `bold ${fontSize}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                // Handle multi-line labels for entrance
+                let lines = [area.name];
+                if (id === 'swanstonstreetentrance') {
+                    lines = ['Swanston Street', 'Entrance'];
+                }
+                
+                const textWidth = Math.max(...lines.map(line => ctx.measureText(line).width));
+                const padding = 6;
+                const lineHeight = fontSize + 4;
+                const totalHeight = lines.length * lineHeight;
+                
+                // Draw pointer line if needed
+                if (drawPointer) {
+                    ctx.strokeStyle = area.borderColor;
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([3, 3]);
+                    ctx.beginPath();
+                    ctx.moveTo(centerX, centerY);
+                    ctx.lineTo(labelX - textWidth/2 - padding - 5, labelY);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                    
+                    // Draw small circle at connection point
+                    ctx.fillStyle = area.borderColor;
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY, 3, 0, 2 * Math.PI);
+                    ctx.fill();
+                }
+                
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+                ctx.fillRect(
+                    labelX - textWidth/2 - padding,
+                    labelY - totalHeight/2,
+                    textWidth + padding * 2,
+                    totalHeight
+                );
+                
+                // Draw label border
+                ctx.strokeStyle = area.borderColor;
+                ctx.lineWidth = 2;
+                ctx.strokeRect(
+                    labelX - textWidth/2 - padding,
+                    labelY - totalHeight/2,
+                    textWidth + padding * 2,
+                    totalHeight
+                );
+
+                // Draw label text (multi-line if needed)
+                ctx.fillStyle = '#333';
+                lines.forEach((line, i) => {
+                    const lineY = labelY - totalHeight/2 + lineHeight/2 + (i * lineHeight);
+                    ctx.fillText(line, labelX, lineY);
+                });
+            }
+
+            // Draw directional arrows from entrance to stairs and elevator
+            // Arrow to Stairs (red) - curved path
+            drawCurvedArrow([
+                [373, 219],
+                [305, 141],
+                [298, 60],
+                [257, 57]
+            ], '#ff6347', 3);
+
+            // Arrow to Elevator (blue) - curved path, adjusted to avoid intersection
+            drawCurvedArrow([
+                [374, 217],
+                [340, 153],
+                [338, 54],
+                [365, 52]
+            ], '#667eea', 3);
+        }
+
+        function drawCurvedArrow(points, color, width) {
+            if (points.length < 2) return;
+
+            ctx.strokeStyle = color;
+            ctx.lineWidth = width;
+            ctx.setLineDash([8, 5]); // Dashed line
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            // Draw smooth curve through points
+            ctx.beginPath();
+            ctx.moveTo(points[0][0], points[0][1]);
+
+            // Use quadratic curves for smoother path
+            for (let i = 1; i < points.length - 1; i++) {
+                const xc = (points[i][0] + points[i + 1][0]) / 2;
+                const yc = (points[i][1] + points[i + 1][1]) / 2;
+                ctx.quadraticCurveTo(points[i][0], points[i][1], xc, yc);
+            }
+
+            // Final segment to last point
+            ctx.lineTo(points[points.length - 1][0], points[points.length - 1][1]);
+            ctx.stroke();
+            ctx.setLineDash([]); // Reset to solid line
+
+            // Draw arrow head at the end
+            const headlen = 15;
+            const lastIdx = points.length - 1;
+            const secondLastIdx = points.length - 2;
+            const dx = points[lastIdx][0] - points[secondLastIdx][0];
+            const dy = points[lastIdx][1] - points[secondLastIdx][1];
+            const angle = Math.atan2(dy, dx);
+
+            ctx.fillStyle = color;
+            ctx.beginPath();
+            ctx.moveTo(points[lastIdx][0], points[lastIdx][1]);
+            ctx.lineTo(
+                points[lastIdx][0] - headlen * Math.cos(angle - Math.PI / 6),
+                points[lastIdx][1] - headlen * Math.sin(angle - Math.PI / 6)
+            );
+            ctx.lineTo(
+                points[lastIdx][0] - headlen * Math.cos(angle + Math.PI / 6),
+                points[lastIdx][1] - headlen * Math.sin(angle + Math.PI / 6)
+            );
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        function isPointInPolygon(point, polygon) {
+            let inside = false;
+            for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+                const xi = polygon[i][0], yi = polygon[i][1];
+                const xj = polygon[j][0], yj = polygon[j][1];
+                
+                const intersect = ((yi > point[1]) !== (yj > point[1]))
+                    && (point[0] < (xj - xi) * (point[1] - yi) / (yj - yi) + xi);
+                if (intersect) inside = !inside;
+            }
+            return inside;
+        }
+
+        function getAreaAtPoint(x, y) {
+            for (const [id, area] of Object.entries(areas)) {
+                if (isPointInPolygon([x, y], area.coords)) {
+                    return id;
+                }
+            }
+            return null;
+        }
+
+        canvas.addEventListener('mousemove', function(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+            const areaId = getAreaAtPoint(x, y);
+            
+            if (areaId !== currentHover) {
+                currentHover = areaId;
+                drawCanvas();
+                
+                if (areaId) {
+                    canvas.style.cursor = 'pointer';
+                } else {
+                    canvas.style.cursor = 'default';
+                }
+            }
+        });
+
+        canvas.addEventListener('click', function(e) {
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left) * (canvas.width / rect.width);
+            const y = (e.clientY - rect.top) * (canvas.height / rect.height);
+
+            const areaId = getAreaAtPoint(x, y);
+            if (areaId) {
+                const area = areas[areaId];
+                document.getElementById('modal-title').textContent = area.name;
+                document.getElementById('modal-description').textContent = area.description;
+                document.getElementById('modal').classList.add('show');
+            }
+        });
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('show');
+        }
+
+        document.getElementById('modal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        window.addEventListener('resize', drawCanvas);
+        
+        // Animation loop for bouncing labels
+        function animate() {
+            const currentTime = Date.now();
+            
+            // Check if 10 seconds have passed since last bounce
+            if (!isAnimating && currentTime - lastBounceTime >= bounceInterval) {
+                isAnimating = true;
+                bounceOffset = 0;
+                bounceDirection = 1;
+                lastBounceTime = currentTime;
+            }
+            
+            // Update bounce offset if currently animating
+            if (isAnimating) {
+                bounceOffset += bounceSpeed * bounceDirection;
+                
+                // Reverse direction at bounce limits
+                if (bounceOffset >= bounceHeight) {
+                    bounceDirection = -1;
+                } else if (bounceOffset <= 0 && bounceDirection === -1) {
+                    // Bounce complete - stop animating
+                    bounceOffset = 0;
+                    isAnimating = false;
+                }
+            }
+            
+            // Redraw canvas with new position
+            drawCanvas();
+            
+            // Continue animation loop
+            requestAnimationFrame(animate);
+        }
+
+        function showFloor(floorId) {
+            if (floorId === 'storey-hall') {
+                window.location.href = 'storey-hall-floorplan.html';
+            } else if (floorId === 'green-brain') {
+                alert('Green Brain floor plan coming soon!');
+            }
+        }
+    </script>
+</body>
+</html>
