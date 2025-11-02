@@ -416,7 +416,7 @@
                 let labelX = centerX;
                 let labelY = centerY;
                 let drawPointer = false;
-                let fontSize = 14;
+                let fontSize = 12;
                 
                 // Apply bounce animation to stairs and elevator labels
                 let labelBounce = 0;
@@ -450,7 +450,7 @@
                 
                 const textWidth = Math.max(...lines.map(line => ctx.measureText(line).width));
                 const padding = 6;
-                const lineHeight = fontSize + 2;
+                const lineHeight = fontSize + 4;
                 const totalHeight = lines.length * lineHeight;
                 
                 // Draw pointer line if needed
