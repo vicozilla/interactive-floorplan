@@ -355,7 +355,7 @@
                 color: 'rgba(160, 53, 34, 0.4)',
                 borderColor: '#A03522',
                 size: 'Not specified',
-                description: 'No description'
+                description: 'The main entrance to the building, facing Swanston Street. This is the primary access point for visitors.<br><br><img src="swanston-street-entrance.jpg" alt="Swanston Street Entrance" style="width: 100%; max-width: 400px; margin-top: 10px; border-radius: 5px; display: block;">'
             }
         };
 
@@ -613,7 +613,7 @@
             if (areaId) {
                 const area = areas[areaId];
                 document.getElementById('modal-title').textContent = area.name;
-                document.getElementById('modal-description').textContent = area.description;
+                document.getElementById('modal-description').innerHTML = area.description;
                 document.getElementById('modal').classList.add('show');
             }
         });
