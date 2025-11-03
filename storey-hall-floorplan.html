@@ -12,8 +12,8 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Museo 700', 'Museo Sans', Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #000000 0%, #FFFFFF 100%);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -37,34 +37,34 @@
         }
 
         .instructions {
-            background: #e3f2fd;
+            background: #16DDD9;
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 20px;
-            border-left: 4px solid #2196F3;
+            border-left: 4px solid #16b0de;
         }
 
         .instructions p {
-            color: #1565C0;
+            color: #000000;
             margin: 5px 0;
         }
 
         .floor-info {
-            background: #e8f5e9;
+            background: #A1DBE4;
             padding: 12px 15px;
             border-radius: 8px;
             margin-bottom: 20px;
-            border-left: 4px solid #4CAF50;
+            border-left: 4px solid #92bbc1;
         }
 
         .floor-info h3 {
-            color: #2e7d32;
+            color: #000000;
             margin-bottom: 5px;
             font-size: 1.1em;
         }
 
         .floor-info p {
-            color: #1b5e20;
+            color: #000000;
             margin: 0;
             font-size: 0.9em;
         }
@@ -80,7 +80,7 @@
             flex: 1;
             min-width: 200px;
             padding: 15px 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #16DDD9 0%, #0E8C8A 100%);
             color: white;
             border: none;
             border-radius: 8px;
@@ -102,7 +102,7 @@
         }
 
         .floor-btn.current {
-            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            background: linear-gradient(135deg, #F04E23 0%, #A03522 100%);
             cursor: default;
         }
 
@@ -296,19 +296,19 @@
         <div class="legend">
             <h3>📍 Clickable Areas:</h3>
             <div class="legend-item">
-                <div class="legend-color" style="background: rgba(156, 39, 176, 0.5);"></div>
+                <div class="legend-color" style="background: rgba(14, 140, 138, 0.5);"></div>
                 <span>Storey Hall Foyer</span>
             </div>
             <div class="legend-item">
-                <div class="legend-color" style="background: rgba(255, 152, 0, 0.5);"></div>
+                <div class="legend-color" style="background: rgba(160, 53, 34, 0.5);"></div>
                 <span>Storey Hall Auditorium</span>
             </div>
             <div class="legend-item">
-                <div class="legend-color" style="background: rgba(102, 126, 234, 0.5);"></div>
+                <div class="legend-color" style="background: rgba(22, 221, 217, 0.5);"></div>
                 <span>Elevator</span>
             </div>
             <div class="legend-item">
-                <div class="legend-color" style="background: rgba(255, 99, 71, 0.5);"></div>
+                <div class="legend-color" style="background: rgba(240, 78, 35, 0.5);"></div>
                 <span>Stairs</span>
             </div>
             <div class="legend-item">
@@ -336,22 +336,22 @@
             storeyhallfoyer: {
                 name: 'Storey Hall Foyer',
                 coords: [[264,119], [345,119], [345,266], [264,266]],
-                color: 'rgba(156, 39, 176, 0.4)',
-                borderColor: '#9C27B0',
+                color: 'rgba(14, 140, 138, 0.4)',
+                borderColor: '#0E8C8A',
                 description: 'This area will function as the booth and networking space.'
             },
             storeyhallauditorium: {
                 name: 'Storey Hall Auditorium',
                 coords: [[59,43], [215,43], [215,348], [59,348]],
-                color: 'rgba(255, 152, 0, 0.4)',
-                borderColor: '#FF9800',
+                color: 'rgba(160, 53, 34, 0.4)',
+                borderColor: '#A03522',
                 description: 'This space will host the opening Plenary, feature workshop, and closing feature debate.\n\nSeating capacity: 450'
             },
             elevator: {
                 name: 'Elevator',
                 coords: [[348,266], [376,266], [376,297], [348,297]],
-                color: 'rgba(102, 126, 234, 0.4)',
-                borderColor: '#667eea',
+                color: 'rgba(22, 221, 217, 0.4)',
+                borderColor: '#16DDD9',
                 description: `Take the elevator to access: 
 - Building exit (Level 2)
 - Green Brain Conference rooms (Level 7) 
@@ -360,8 +360,8 @@
             stairs: {
                 name: 'Stairs',
                 coords: [[288,290], [345,290], [345,340], [288,340]],
-                color: 'rgba(255, 99, 71, 0.4)',
-                borderColor: '#ff6347',
+                color: 'rgba(240, 78, 35, 0.4)',
+                borderColor: '#F04E23',
                 description: `Take these stairs to access: 
 - Building exit (Level 2)
 - Green Brain Conference rooms (Level 7) 
