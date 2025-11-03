@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #000000 0%, #ffffff 100%);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
@@ -37,34 +37,34 @@
         }
 
         .instructions {
-            background: #e3f2fd;
+            background: #e6b1a2;
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 20px;
-            border-left: 4px solid #2196F3;
+            border-left: 4px solid #F04E23;
         }
 
         .instructions p {
-            color: #1565C0;
+            color: #000000;
             margin: 5px 0;
         }
 
         .floor-info {
-            background: #e8f5e9;
+            background: #A1DBE4;
             padding: 12px 15px;
             border-radius: 8px;
             margin-bottom: 20px;
-            border-left: 4px solid #4CAF50;
+            border-left: 4px solid #92bbc1;
         }
 
         .floor-info h3 {
-            color: #2e7d32;
+            color: #000000;
             margin-bottom: 5px;
             font-size: 1.1em;
         }
 
         .floor-info p {
-            color: #1b5e20;
+            color: #000000;
             margin: 0;
             font-size: 0.9em;
         }
@@ -80,7 +80,7 @@
             flex: 1;
             min-width: 200px;
             padding: 15px 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #16DDD9 0%, #0E8C8A 100%);
             color: white;
             border: none;
             border-radius: 8px;
@@ -102,7 +102,7 @@
         }
 
         .floor-btn.current {
-            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            background: linear-gradient(135deg, #F04E23 0%, #A03522 100%);
             cursor: default;
         }
 
@@ -278,19 +278,19 @@
         <div class="legend">
             <h3>🎨 Legend</h3>
             <div class="legend-item">
-                <div class="legend-color" style="background-color: rgba(102, 126, 234, 0.4); border-color: #667eea;"></div>
+                <div class="legend-color" style="background-color: rgba(22, 221, 217, 0.4);"></div>
                 <span>Elevator</span>
             </div>
             <div class="legend-item">
-                <div class="legend-color" style="background-color: rgba(255, 152, 0, 0.4); border-color: #FF9800;"></div>
+                <div class="legend-color" style="background-color: rgba(14, 140, 138, 0.4);"></div>
                 <span>Conference Room</span>
             </div>
             <div class="legend-item">
-                <div class="legend-color" style="background-color: rgba(156, 39, 176, 0.4); border-color: #9C27B0;"></div>
+                <div class="legend-color" style="background-color: rgba(160, 53, 34, 0.4);"></div>
                 <span>Seminar Room</span>
             </div>
             <div class="legend-item">
-                <div class="legend-color" style="background-color: rgba(0, 188, 212, 0.4); border-color: #00BCD4;"></div>
+                <div class="legend-color" style="background-color: rgba(0, 188, 212, 0.4);"></div>
                 <span>Male Washroom (🚹), Female Washroom (🚺) & Accessible Toilet (♿)</span>
             </div>
         </div>
@@ -313,8 +313,8 @@
             elevator: {
                 name: 'Elevator',
                 coords: [[161, 358], [208, 358], [208, 407], [161, 407]],
-                color: 'rgba(102, 126, 234, 0.4)',
-                borderColor: '#667eea',
+                color: 'rgba(22, 221, 217, 0.4)',
+                borderColor: '#16DDD9',
                 description: `Take the elevator to access: 
 - Building exit (Level 2)
 - Storey Hall Foyer (Level 5) 
@@ -323,15 +323,15 @@
             conferenceroom: {
                 name: 'Conference Room',
                 coords: [[291, 156], [422, 156], [422, 422], [291, 422]],
-                color: 'rgba(255, 152, 0, 0.4)',
-                borderColor: '#FF9800',
+                color: 'rgba(14, 140, 138, 0.4)',
+                borderColor: '#0E8C8A',
                 description: 'Large conference room suitable for meetings, presentations, and collaborative work sessions.'
             },
             seminarroom: {
                 name: 'Seminar Room',
                 coords: [[2, 117], [145, 117], [145, 418], [2, 418]],
-                color: 'rgba(156, 39, 176, 0.4)',
-                borderColor: '#9C27B0',
+                color: 'rgba(160, 53, 34, 0.4)',
+                borderColor: '#A03522',
                 description: 'Seminar room designed for educational sessions, workshops, and group discussions.'
             },
             malewashroom: {
@@ -468,7 +468,7 @@
                 [158, 382],
                 [151, 359],
                 [120, 360]
-            ], '#9c27b0', 3);
+            ], '#A03522', 3);
 
             // Elevator to conference room (orange arrow matching conference room)
             drawCurvedArrow([
@@ -476,7 +476,7 @@
                 [274, 382],
                 [278, 276],
                 [304, 278]
-            ], '#FF9800', 3);
+            ], '#0E8C8A', 3);
         }
 
         function drawCurvedArrow(points, color, width) {
