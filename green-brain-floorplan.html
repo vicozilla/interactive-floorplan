@@ -329,7 +329,7 @@
                 coords: [[291, 156], [422, 156], [422, 422], [291, 422]],
                 color: 'rgba(14, 140, 138, 0.4)',
                 borderColor: '#0E8C8A',
-                description: 'Large conference room suitable for meetings, presentations, and collaborative work sessions.'
+                description: 'Large conference room suitable for meetings, presentations, and collaborative work sessions.<br><br><img src="https://github.com/vicozilla/interactive-floorplan/blob/main/green-brain-conferenceroom.jpg?raw=true" alt="Conference Room" style="width: 100%; max-width: 400px; margin-top: 10px; border-radius: 5px; display: block;">'
             },
             seminarroom: {
                 name: 'Seminar Room',
@@ -581,7 +581,7 @@
             if (areaId) {
                 const area = areas[areaId];
                 document.getElementById('modal-title').textContent = area.name;
-                document.getElementById('modal-description').textContent = area.description;
+                document.getElementById('modal-description').innerHTML = area.description;
                 document.getElementById('modal').classList.add('show');
             }
         });
