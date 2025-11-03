@@ -347,7 +347,7 @@
                 coords: [[59,43], [215,43], [215,348], [59,348]],
                 color: 'rgba(160, 53, 34, 0.4)',
                 borderColor: '#A03522',
-                description: 'This space will host the opening Plenary, feature workshop, and closing feature debate.\n\nSeating capacity: 450'
+                description: 'This space will host the opening Plenary, feature workshop, and closing feature debate.<br><br>Seating capacity: 450<br><br><img src="https://github.com/vicozilla/interactive-floorplan/blob/main/storey-hall-auditorium.jpg?raw=true" alt="Storey Hall Auditorium" style="width: 100%; max-width: 400px; margin-top: 10px; border-radius: 5px; display: block;">'
             },
             elevator: {
                 name: 'Elevator',
@@ -633,7 +633,7 @@
             if (areaId) {
                 const area = areas[areaId];
                 document.getElementById('modal-title').textContent = area.name;
-                document.getElementById('modal-description').textContent = area.description;
+                document.getElementById('modal-description').innerHTML = area.description;
                 document.getElementById('modal').classList.add('show');
             }
         });
