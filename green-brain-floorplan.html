@@ -256,7 +256,7 @@
         </div>
 
         <div class="floor-info">
-            <h3>📍 Current Floor: Green Brain (Level 7)</h3>
+            <h3>📍 Current Floor: Green Brain & Seminar Rooms (Level 7)</h3>
             <p>Conference & Seminar Rooms</p>
         </div>
 
@@ -270,7 +270,7 @@
                 <small style="font-weight: normal; font-size: 0.85em;">Foyer & Auditorium</small>
             </button>
             <button class="floor-btn current" onclick="showFloor('green-brain')">
-                🧠 Green Brain (Level 7)<br>
+                🧠 Green Brain & Seminar Rooms (Level 7)<br>
                 <small style="font-weight: normal; font-size: 0.85em;">You are here</small>
             </button>
         </div>
@@ -287,7 +287,7 @@
             </div>
             <div class="legend-item">
                 <div class="legend-color" style="background-color: rgba(14, 140, 138);"></div>
-                <span>Conference Room</span>
+                <span>Green Brain Room</span>
             </div>
             <div class="legend-item">
                 <div class="legend-color" style="background-color: rgba(160, 53, 34);"></div>
@@ -325,14 +325,14 @@
 - Storey Hall Foyer (Level 5)`
             },
             conferenceroom: {
-                name: 'Conference Room',
+                name: 'Green Brain Room',
                 coords: [[291, 156], [422, 156], [422, 422], [291, 422]],
                 color: 'rgba(14, 140, 138, 0.4)',
                 borderColor: '#0E8C8A',
                 description: 'Large conference room suitable for meetings, presentations, and collaborative work sessions.<br><br><img src="https://github.com/vicozilla/interactive-floorplan/blob/main/green-brain-conferenceroom.jpg?raw=true" alt="Conference Room" style="width: 100%; max-width: 400px; margin-top: 10px; border-radius: 5px; display: block;">'
             },
             seminarroom: {
-                name: 'Seminar Room',
+                name: 'Seminar Rooms',
                 coords: [[2, 117], [145, 117], [145, 418], [2, 418]],
                 color: 'rgba(160, 53, 34, 0.4)',
                 borderColor: '#A03522',
@@ -427,7 +427,7 @@
                 // Handle multi-line labels and icons
                 let lines = [area.name];
                 if (id === 'conferenceroom') {
-                    lines = ['Conference', 'Room'];
+                    lines = ['Green Brain', 'Room'];
                 } else if (id === 'malewashroom' || id === 'femalewashroom' || id === 'accessibletoilet') {
                     // Icons use larger font
                     fontSize = 24;
